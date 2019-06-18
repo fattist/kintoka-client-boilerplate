@@ -13,16 +13,23 @@ class login extends Component {
     this.prompt = this.prompt.bind(this);
   }
 
+  componentDidUpdate() {
+    if (this.props.authenticated) {
+      this.props.navigation.navigate('Home');
+    }
+  }
+
   componentDidMount() {
-    console.log(this.props, 'props');
     if (!this.props.authenticated) {
       this.prompt();
     }
   }
 
+  comp
+
   prompt() {
     this.auth0.webAuth.authorize({
-      scope: 'openid profile email',
+      scope: 'openid profile',
       audience: `https://${Config.AUTH0_DOMAIN}/userinfo`
     }).then(response =>
       this.props.handler(response, s.AUTH0_SUCCESS)
