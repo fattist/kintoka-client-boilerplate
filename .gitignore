@@ -1,0 +1,4 @@
+node_modules/
+
+src/native/ios/.env
+src/native/ios/*.env

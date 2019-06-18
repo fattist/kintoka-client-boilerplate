@@ -1,25 +1,15 @@
-import React from 'react';
-import { createSwitchNavigator, createAppContainer } from 'react-navigation';
+import React, { Component } from 'react';
+import { Provider } from 'react-redux';
 
-import { AppNavigator, AuthNavigator } from './router.js';
+import Router from '@navigators';
+import store from '@store';
 
-const SwitchNavigator = createSwitchNavigator(
-  {
-    Login: AuthNavigator,
-    App: AppNavigator
-  },
-  {
-    initialRouteName: 'Login',
-    defaultNavigationOptions: {
-      headerStyle: {
-        backgroundColor: '#f4511e',
-      },
-      headerTintColor: '#fff',
-      headerTitleStyle: {
-        fontWeight: 'bold',
-      },
-    }
+export default class App extends Component {
+  render() {
+    return (
+      <Provider store={store()}>
+        <Router />
+      </Provider>
+    )
   }
-);
-
-export default createAppContainer(SwitchNavigator);
+}
