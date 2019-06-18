@@ -2,7 +2,6 @@ import React, { Component } from 'react';
 import Auth0 from 'react-native-auth0';
 import Config from 'react-native-config';
 import { connect } from 'react-redux';
-import SplashScreen from 'react-native-splash-screen';
 
 import * as s from '@selectors/auth0'
 
@@ -15,8 +14,6 @@ class login extends Component {
   }
 
   componentDidMount() {
-    SplashScreen.hide();
-
     console.log(this.props, 'props');
     if (!this.props.authenticated) {
       this.prompt();
