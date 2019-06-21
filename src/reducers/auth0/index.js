@@ -1,6 +1,6 @@
 import * as s from '@selectors/auth0'
 
-const initial = { authenticated: false };
+const initial = { authenticated: false, registered: false };
 
 export default function auth0(state = initial, action = null) {
   let response;
@@ -12,8 +12,13 @@ export default function auth0(state = initial, action = null) {
         error: action.error
       })
     break;
+    case s.AUTH0_REGISTERED:
+      response = Object.assign({}, state, {
+        authenticated: false,
+        registered: true
+      });
+    break;
     case s.AUTH0_SUCCESS:
-      console.log(s.AUTH0_SUCCESS, action.success);
       response = Object.assign({}, state, {
         authenticated: true,
         success : action.success

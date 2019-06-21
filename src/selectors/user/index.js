@@ -1,0 +1,7 @@
+const USER_EMAIL = 'USER_EMAIL';
+const USER_PASSWORD = 'USER_PASSWORD';
+
+export {
+  USER_EMAIL,
+  USER_PASSWORD
+}
