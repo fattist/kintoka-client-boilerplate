@@ -19,6 +19,7 @@ export default function auth0(state = initial, action = null) {
       });
     break;
     case s.AUTH0_SUCCESS:
+      console.log(action.success,'success');
       response = Object.assign({}, state, {
         authenticated: true,
         success : action.success

@@ -23,8 +23,19 @@ class register extends Component {
     static navigationOptions = Object.assign({}, headerOptions, { title: '' });
 
     componentDidUpdate() {
-        if (this.props.registered) {
-            this.props.navigation.navigate('Login');
+        if (this.props.authenticated && this.props.registered) {
+            this.props.navigation.navigate('Home');
+        } else if (this.props.registered) {
+            this.auth0.auth.passwordRealm({
+                username: this.props.username,
+                password: this.props.password,
+                audience: Config.AUTH0_AUDIENCE,
+                realm: 'Username-Password-Authentication'
+            }).then(response => 
+                this.props.submit(response, a.AUTH0_SUCCESS)
+            ).catch(error =>
+                this.props.submit(error, a.AUTH0_ERROR)
+            )
         }
     }
 
@@ -34,6 +45,7 @@ class register extends Component {
         this.auth0.auth.createUser({
             email: this.props.email,
             password: this.props.password,
+            username: this.props.username,
             connection: 'Username-Password-Authentication'
         }).then(response => 
             this.props.submit(response, a.AUTH0_REGISTERED)
@@ -55,6 +67,17 @@ class register extends Component {
                         justifyContent: 'flex-start'
                     }}
                 >
+                    <TextInput
+                        onChangeText={username => {
+                            this.props.update({
+                                username: username
+                            }, u.USER_USERNAME)
+                        }}
+                        style={formStyles.input}
+                        value={this.props.username}
+                        placeholder={'username'}
+                        placeholderTextColor={'#fff'}
+                    />
                     <TextInput
                         onChangeText={email => {
                             this.props.update({
@@ -101,11 +124,12 @@ class register extends Component {
 
 const mapStateToProps = ({ auth0, user }) => ({
     authenticated: auth0.authenticated,
-    disabled: user.disabled,
-    email: user.email || '',
+    disabled: !(user.username.valid && user.email.valid && user.password.valid),
+    email: user.email.value || '',
     error: auth0.error,
-    password: user.password || '',
-    registered: auth0.registered
+    password: user.password.value || '',
+    registered: auth0.registered,
+    username: user.username.value || ''
 });
 
 const mapDispatchToProps = dispatch => ({

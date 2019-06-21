@@ -33,8 +33,7 @@ class login extends Component {
 
   checkSession() {
     if (this.props.authenticated) {
-      // this.props.navigation.navigate('Home');
-      console.log('logged in');
+      this.props.navigation.navigate('Home');
     }
   }
 
@@ -42,8 +41,9 @@ class login extends Component {
     Alert.alert('submit');
 
     this.auth0.auth.passwordRealm({
-        username: this.props.email,
+        username: this.props.username,
         password: this.props.password,
+        audience: Config.AUTH0_AUDIENCE,
         realm: 'Username-Password-Authentication'
     }).then(response => 
         this.props.submit(response, a.AUTH0_SUCCESS)
@@ -66,14 +66,14 @@ class login extends Component {
               }}
           >
             <TextInput
-                onChangeText={email => {
+                onChangeText={username => {
                     this.props.update({
-                        email: email
-                    }, u.USER_EMAIL)
+                        username: username
+                    }, u.USER_USERNAME)
                 }}
                 style={formStyles.input}
-                value={this.props.email}
-                placeholder={'email'}
+                value={this.props.username}
+                placeholder={'username'}
                 placeholderTextColor={'#fff'}
             />
             <TextInput
@@ -111,10 +111,10 @@ class login extends Component {
 
 const mapStateToProps = ({ auth0, user }) => ({
   authenticated: auth0.authenticated,
-  disabled: user.disabled,
-  email: user.email || '',
+  disabled: !(user.username.valid && user.password.valid),
   error: auth0.error,
-  password: user.password || ''
+  password: user.password.value || '',
+  username: user.username.value || ''
 });
 
 const mapDispatchToProps = dispatch => ({
