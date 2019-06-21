@@ -46,6 +46,7 @@ class register extends Component {
             email: this.props.email,
             password: this.props.password,
             username: this.props.username,
+            metadata: { phone: `+1${this.props.phone}` },
             connection: 'Username-Password-Authentication'
         }).then(response => 
             this.props.submit(response, a.AUTH0_REGISTERED)
@@ -90,6 +91,17 @@ class register extends Component {
                         placeholderTextColor={'#fff'}
                     />
                     <TextInput
+                        onChangeText={phone => {
+                            this.props.update({
+                                phone: phone
+                            }, u.USER_MOBILE_PHONE)
+                        }}
+                        style={formStyles.input}
+                        value={this.props.phone}
+                        placeholder={'phone'}
+                        placeholderTextColor={'#fff'}
+                    />
+                    <TextInput
                         secureTextEntry={true}
                         onChangeText={password => {
                             this.props.update({
@@ -124,10 +136,11 @@ class register extends Component {
 
 const mapStateToProps = ({ auth0, user }) => ({
     authenticated: auth0.authenticated,
-    disabled: !(user.username.valid && user.email.valid && user.password.valid),
+    disabled: !(user.username.valid && user.email.valid && user.password.valid && user.phone.valid),
     email: user.email.value || '',
     error: auth0.error,
     password: user.password.value || '',
+    phone: user.phone.value || '',
     registered: auth0.registered,
     username: user.username.value || ''
 });
