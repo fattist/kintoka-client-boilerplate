@@ -1,11 +1,11 @@
 import React, { Component } from 'react';
 import { Alert, StatusBar, Text, TextInput, TouchableOpacity, View } from 'react-native';
-import Auth0 from 'react-native-auth0';
-import Config from 'react-native-config';
 import { connect } from 'react-redux';
 
 import * as a from '@selectors/auth0';
 import * as u from '@selectors/user';
+
+import a0 from '@shared/helpers/auth0';
 
 import { mainColor } from '@shared/stylesheets/constants';
 import { options as headerOptions } from '@shared/header';
@@ -16,7 +16,7 @@ class register extends Component {
     constructor(props) {
         super(props);
 
-        this.auth0 = new Auth0({ domain: Config.AUTH0_DOMAIN, clientId: Config.AUTH0_CLIENT_ID });
+        this.auth0 = new a0();
         this.submit = this.submit.bind(this);
     }
 
@@ -26,33 +26,35 @@ class register extends Component {
         if (this.props.authenticated && this.props.registered) {
             this.props.navigation.navigate('Home');
         } else if (this.props.registered) {
-            this.auth0.auth.passwordRealm({
-                username: this.props.username,
-                password: this.props.password,
-                audience: Config.AUTH0_AUDIENCE,
-                realm: 'Username-Password-Authentication'
-            }).then(response => 
-                this.props.submit(response, a.AUTH0_SUCCESS)
-            ).catch(error =>
-                this.props.submit(error, a.AUTH0_ERROR)
-            )
+            this.login();
         }
     }
 
-    submit() {
+    async login() {
+        try {
+            const token = await this.auth0.login(this.props.username, this.props.password);
+
+            this.props.submit(token, a.AUTH0_SUCCESS);
+        } catch (error) {
+            this.props.submit(error, a.AUTH0_ERROR);
+        }
+    }
+
+    async submit() {
         Alert.alert('submit');
 
-        this.auth0.auth.createUser({
-            email: this.props.email,
-            password: this.props.password,
-            username: this.props.username,
-            metadata: { phone: `+1${this.props.phone}` },
-            connection: 'Username-Password-Authentication'
-        }).then(response => 
-            this.props.submit(response, a.AUTH0_REGISTERED)
-        ).catch(error =>
-            this.props.submit(error, a.AUTH0_ERROR)
-        )
+        try {
+            const user = await this.auth0.register({
+                email: this.props.email,
+                password: this.props.password,
+                username: this.props.username,
+                phone: this.props.phone
+            });
+
+            this.props.submit(user, a.AUTH0_REGISTERED);
+        } catch (error) {
+            this.props.submit(error, a.AUTH0_ERROR);
+        }
     }
 
     render() {
