@@ -6,6 +6,16 @@ export default class a0 {
         this.client = new Auth0({ domain: Config.AUTH0_DOMAIN, clientId: Config.AUTH0_CLIENT_ID });
     }
 
+    info(token) {
+        return new Promise(async (resolve, reject) => {
+            try {
+                return resolve(await this.client.auth.userInfo({ token: token }));
+            } catch(error) {
+                reject(error);
+            }
+        })
+    }
+
     login(username, password) {
         return new Promise(async (resolve, reject) => {
             try {
@@ -13,10 +23,11 @@ export default class a0 {
                     username: username,
                     password: password,
                     audience: Config.AUTH0_AUDIENCE,
-                    realm: 'Username-Password-Authentication'
+                    realm: 'Username-Password-Authentication',
+                    scope: 'openid'
                 });
 
-                resolve(req);
+                return resolve(req);
             } catch (error) {
                 reject(error);
             }
@@ -34,7 +45,7 @@ export default class a0 {
                     connection: 'Username-Password-Authentication'
                 });
 
-                resolve(user);
+                return resolve(user);
             } catch (error) {
                 reject(error);
             }

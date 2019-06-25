@@ -34,7 +34,7 @@ class login extends Component {
 
   checkSession() {
     if (this.props.authenticated) {
-      this.props.navigation.navigate('Home');
+      this.props.navigation.navigate('Profile');
     }
   }
 

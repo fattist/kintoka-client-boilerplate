@@ -1,16 +1,20 @@
 import * as s from '@selectors/auth0'
 
-const initial = { authenticated: false, registered: false };
+const initial = { authenticated: false, profile: {}, registered: false };
 
 export default function auth0(state = initial, action = null) {
   let response;
 
   switch (action.type) {
     case s.AUTH0_ERROR:
-      console.warn(s.AUTH0_ERROR, action.error);
       response = Object.assign({}, state, {
         error: action.error
-      })
+      });
+    break;
+    case s.AUTH0_PROFILE:
+      response = Object.assign({}, state, {
+        profile: action.profile
+      });
     break;
     case s.AUTH0_REGISTERED:
       response = Object.assign({}, state, {
@@ -19,10 +23,10 @@ export default function auth0(state = initial, action = null) {
       });
     break;
     case s.AUTH0_SUCCESS:
-      console.log(action.success,'success');
       response = Object.assign({}, state, {
         authenticated: true,
-        success : action.success
+        accessToken: action.success.response.accessToken,
+        expiresIn: ((+new Date() * 1000) + action.success.response.expiresIn)
       });
     break;
     default:
